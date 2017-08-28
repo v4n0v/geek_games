@@ -5,13 +5,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import ru.geekuniversity.engine.Base2DScreen;
+import ru.geekuniversity.engine.sprites.Sprite;
 
 public class MenuScreen extends Base2DScreen {
 
-    private SpriteBatch batch;
+    //private SpriteBatch batch;
     private Texture textureCircle;
+    TextureRegion texRegion;
+    private Sprite circle;
 
     public MenuScreen(Game game) {
         super(game);
@@ -22,25 +26,29 @@ public class MenuScreen extends Base2DScreen {
 
         super.show();
         batch = new SpriteBatch();
-        batch.getProjectionMatrix().idt().translate(0.1f, 0.2f,0f);
 
+        //textureCircle.setWrap();
         textureCircle = new Texture("circle.png");
+        circle = new Sprite(new TextureRegion(textureCircle));
+        //circle.setSize(1f,1f);
+        circle.setWidthProportion(0.67f);
 
     }
 
     @Override
-    public void render (float delta) {
+    public void render(float delta) {
         Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(textureCircle, -1f, -0.5f,  0.5f, 0.5f);
-        resizeScreenLockedRatio(batch);
+        //batch.draw(texRegion, -0.5f, -0.5f, 1f, 1f);
+        circle.draw(batch);
+        //  resizeScreenLockedRatio(batch);
         batch.end();
     }
 
 
     @Override
-    public void dispose () {
+    public void dispose() {
         batch.dispose();
         textureCircle.dispose();
         super.dispose();

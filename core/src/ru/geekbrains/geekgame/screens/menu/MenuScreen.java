@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import ru.geekuniversity.engine.Base2DScreen;
+import ru.geekuniversity.engine.Sprite2DTexture;
 import ru.geekuniversity.engine.sprites.Sprite;
 
 public class MenuScreen extends Base2DScreen {
@@ -28,7 +29,8 @@ public class MenuScreen extends Base2DScreen {
         batch = new SpriteBatch();
 
         //textureCircle.setWrap();
-        textureCircle = new Texture("circle.png");
+        textureCircle = new Sprite2DTexture("circle.png");
+        textureCircle.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
         circle = new Sprite(new TextureRegion(textureCircle));
         //circle.setSize(1f,1f);
         circle.setWidthProportion(0.67f);
@@ -40,9 +42,9 @@ public class MenuScreen extends Base2DScreen {
         Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        //batch.draw(texRegion, -0.5f, -0.5f, 1f, 1f);
+
         circle.draw(batch);
-        //  resizeScreenLockedRatio(batch);
+
         batch.end();
     }
 

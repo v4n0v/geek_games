@@ -6,9 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekuniversity.engine.math.Rect;
 
-/**
- * Created by avetc on 28.08.2017.
- */
 
 public class Sprite extends Rect {
     protected float angle;
@@ -54,6 +51,7 @@ public class Sprite extends Rect {
     public boolean touchDragged(Vector2 touch, int pointer) {
         return false;
     }
+
     public void update(float deltaTime) {
 
     }

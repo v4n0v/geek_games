@@ -15,7 +15,7 @@ import ru.geekuniversity.engine.math.Rect;
 
 public class Base2DScreen implements Screen, InputProcessor {
 
-    private final float WORLD_HEIGHT=1f;
+    protected final float WORLD_HEIGHT=1f;
     public SpriteBatch batch;
     protected final Game game;
 
@@ -36,6 +36,7 @@ public class Base2DScreen implements Screen, InputProcessor {
         System.out.println("show");
         Gdx.input.setInputProcessor(this);
         if (batch!=null) throw new RuntimeException("batch != null, повторная установка scree wo dispose");
+        batch = new SpriteBatch();
     }
 
     @Override
@@ -74,14 +75,16 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void hide() {
-        System.out.println("dispose");
-        batch.dispose();
-        batch=null;
+        System.out.println("hide");
+        dispose();
+
     }
 
     @Override
     public void dispose() {
         System.out.println("dispose");
+        batch.dispose();
+        batch = null;
     }
 
 
@@ -105,13 +108,13 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     private final Vector2 touch = new Vector2();
 
-    public void touchDown(Vector2 touch, int pointer){
+    protected void touchDown(Vector2 touch, int pointer){
 
 }
-    public void touchUp(Vector2 touch, int pointer){
+    protected void touchUp(Vector2 touch, int pointer){
 
     }
-    public void touchDragged(Vector2 touch, int pointer){
+    protected void touchDragged(Vector2 touch, int pointer){
 
     }
     @Override
@@ -145,11 +148,5 @@ public class Base2DScreen implements Screen, InputProcessor {
         return false;
     }
 
-    public void resizeScreenLockedRatio(SpriteBatch batch){
-        float screenWidth = Gdx.graphics.getWidth();
-        float screenHeight = Gdx.graphics.getHeight();
-        float screenRatio = screenWidth/screenHeight;
-        batch.getProjectionMatrix().idt(). scale(1f, 1f*screenRatio, 1f);
-    }
 
 }

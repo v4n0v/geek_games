@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
@@ -15,17 +14,29 @@ import ru.geekuniversity.engine.math.Rect;
 
 public class Base2DScreen implements Screen, InputProcessor {
 
-    protected final float WORLD_HEIGHT=1f;
-    public SpriteBatch batch;
+    private static final float WORLD_HEIGHT = 1f;
+
     protected final Game game;
 
-    private final Rect screenBounds = new Rect(); // граница экрана, области рисования в пкс
-    private final Rect worldBounds = new Rect();  // граница проекции мировых координат
-    private final Rect glBounds = new Rect(0f, 0f, 1, 1); // дефолтная границы прекции мира = gl
+    private final Rect screenBounds = new Rect(); //граница области рисования в px
+    private final Rect worldBounds = new Rect();  //желаемые граница проекции мировых координат
+    private final Rect glBounds = new Rect(0f, 0f, 1f, 1f); //дефолтные границы проекции мир - gl
 
+    /**
+     * Эта матрица используется SpriteBatch.
+     * С помощью неё, он наши мировые координаты переводит в GL(-1, 1, -1, 1) для последующей отрисовки.
+     * SpriteBather умеет работать только с мартицей 4x4.
+     */
     protected final Matrix4 matWorldToGL = new Matrix4();
 
+    /**
+     * Эту матрицу мы будем использовать чтобы переводить тачи из экранных координат в мировые.
+     * Тут нам удобнее использовать матрицу 3x3, так как класс Vector2 умеет умножатся на неё.
+     */
     protected final Matrix3 matScreenToWorld = new Matrix3();
+
+    //С помощью батчера будет рисовать спрайты в наследниках
+    protected SpriteBatch batch;
 
     public Base2DScreen(Game game) {
         this.game = game;
@@ -35,13 +46,8 @@ public class Base2DScreen implements Screen, InputProcessor {
     public void show() {
         System.out.println("show");
         Gdx.input.setInputProcessor(this);
-        if (batch!=null) throw new RuntimeException("batch != null, повторная установка scree wo dispose");
+        if(batch != null) throw new RuntimeException("batch != null, повторная установка screen без dispose");
         batch = new SpriteBatch();
-    }
-
-    @Override
-    public void render(float delta) {
-
     }
 
     @Override
@@ -51,16 +57,23 @@ public class Base2DScreen implements Screen, InputProcessor {
         screenBounds.setLeft(0);
         screenBounds.setBottom(0);
 
-        float aspect = width/(float)height;
+        float aspect = width / (float)height;
         worldBounds.setHeight(WORLD_HEIGHT);
-        worldBounds.setWidth(WORLD_HEIGHT*aspect);
+        worldBounds.setWidth(WORLD_HEIGHT * aspect);
+        //Расчитываем матрицу перехода Мир-GL
         MatrixUtils.calcTransitionMatrix(matWorldToGL, worldBounds, glBounds);
+        //И устанавливаем её батчеру. В общем то она нам больше и не нужна
         batch.setProjectionMatrix(matWorldToGL);
+        //Рассчитываем матрицу перехода Экран - Мир
         MatrixUtils.calcTransitionMatrix(matScreenToWorld, screenBounds, worldBounds);
         resize(worldBounds);
     }
-    protected void resize(Rect worldBounds){
 
+    protected void resize(Rect worldBounds) {
+    }
+
+    @Override
+    public void render(float delta) {
     }
 
     @Override
@@ -77,7 +90,6 @@ public class Base2DScreen implements Screen, InputProcessor {
     public void hide() {
         System.out.println("hide");
         dispose();
-
     }
 
     @Override
@@ -87,54 +99,52 @@ public class Base2DScreen implements Screen, InputProcessor {
         batch = null;
     }
 
-
-    @Override
-    public boolean keyDown(int keycode) {
-        System.out.print("keydown");
-        return false;
+    //Для перехват тачей оверрайдим ЭТИ методы!!!
+    protected void touchDown(Vector2 touch, int pointer) {
     }
 
-    @Override
-    public boolean keyUp(int keycode) {
-        System.out.println("keyUp");
-        return false;
+    protected void touchMove(Vector2 touch, int pointer) {
     }
 
-    @Override
-    public boolean keyTyped(char character) {
-        System.out.println("key typed '"+character+"'");
-        return false;
+    protected void touchUp(Vector2 touch, int pointer) {
     }
 
-    private final Vector2 touch = new Vector2();
+    //Эти методы НЕ оверрайлим НИКОГДА
+    private final Vector2 touch = new Vector2(); //Вектор для принятия/перевода/передачи тачей
 
-    protected void touchDown(Vector2 touch, int pointer){
-
-}
-    protected void touchUp(Vector2 touch, int pointer){
-
-    }
-    protected void touchDragged(Vector2 touch, int pointer){
-
-    }
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        touch.set(screenX, Gdx.graphics.getHeight()-screenX).mul(matScreenToWorld);
+        touch.set(screenX, screenBounds.getHeight() - 1f - screenY).mul(matScreenToWorld);
         touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        touch.set(screenX, Gdx.graphics.getHeight()-screenX).mul(matScreenToWorld);
+        touch.set(screenX, screenBounds.getHeight() - 1f - screenY).mul(matScreenToWorld);
         touchUp(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        touch.set(screenX, Gdx.graphics.getHeight()-screenX).mul(matScreenToWorld);
-        touchDragged(touch, pointer);
+        touch.set(screenX, screenBounds.getHeight() - 1f - screenY).mul(matScreenToWorld);
+        touchMove(touch, pointer);
+        return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
         return false;
     }
 
@@ -147,6 +157,4 @@ public class Base2DScreen implements Screen, InputProcessor {
     public boolean scrolled(int amount) {
         return false;
     }
-
-
 }

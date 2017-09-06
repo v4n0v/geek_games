@@ -1,4 +1,4 @@
-package ru.geekbrains.geekgame.screens.menu;
+package ru.geekbrains.geekgame;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

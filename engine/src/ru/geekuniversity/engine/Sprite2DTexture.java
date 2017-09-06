@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 
-
-
 public class Sprite2DTexture extends Texture {
 
     public Sprite2DTexture(String internalPath) {
@@ -17,5 +15,3 @@ public class Sprite2DTexture extends Texture {
         setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
     }
 }
-
-

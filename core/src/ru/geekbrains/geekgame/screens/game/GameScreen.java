@@ -28,7 +28,7 @@ public class GameScreen extends Base2DScreen{
     private static final float STAR_HEIGHT = 0.01f;
     private final Star[] stars = new Star[STARS_COUNT];
     private TextureAtlas atlasMenu;
-
+    boolean outOfBounds=false;
 
 
     public GameScreen(Game game) {
@@ -40,8 +40,6 @@ public class GameScreen extends Base2DScreen{
         super.show();
         textureBackground = new Sprite2DTexture("textures/bg.png");
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
-
-
 
         atlasMenu=new TextureAtlas("textures/menuAtlas.tpack");
         TextureRegion regionStar = atlasMenu.findRegion("star");
@@ -58,6 +56,7 @@ public class GameScreen extends Base2DScreen{
     @Override
     protected void resize(Rect worldBounds) {
         background.resize(worldBounds);
+
         mainShip.resize(worldBounds);
         for (int i = 0; i < stars.length; i++) stars[i].resize(worldBounds);
     }
@@ -65,25 +64,37 @@ public class GameScreen extends Base2DScreen{
     @Override
     protected void touchDown(Vector2 touch, int pointer) {
         mainShip.touchDown(touch, pointer);
+        for (int i = 0; i < stars.length; i++) stars[i].touchDown(touch, pointer);
+
     }
 
     @Override
     protected void touchUp(Vector2 touch, int pointer) {
+
         mainShip.touchUp(touch, pointer);
+        for (int i = 0; i < stars.length; i++) stars[i].touchUp(touch, pointer);
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        mainShip.keyDown(keycode);
-        for (int i = 0; i < stars.length; i++) stars[i].keyDown(keycode);
+       mainShip.keyDown(keycode);
+       if (mainShip.isInBounds())
+            for (int i = 0; i < stars.length; i++) stars[i].keyDown(keycode );
+
+        //}
+
+
         return false;
 
     }
 
     @Override
     public boolean keyUp(int keycode) {
+
+        // if (!mainShip.isInBounds())
+            for (int i = 0; i < stars.length; i++) stars[i].keyUp(keycode );
+      //  }
         mainShip.keyUp(keycode);
-        for (int i = 0; i < stars.length; i++) stars[i].keyUp(keycode);
         return false;
     }
 
@@ -97,8 +108,8 @@ public class GameScreen extends Base2DScreen{
 
     private void update(float deltaTime) {
 
-        mainShip.update(deltaTime);
         for (int i = 0; i < stars.length; i++) stars[i].update(deltaTime);
+        mainShip.update(deltaTime);
     }
 
     private void checkCollisions() {
@@ -114,8 +125,9 @@ public class GameScreen extends Base2DScreen{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
-        mainShip.draw(batch);
+
         for (int i = 0; i < stars.length; i++) stars[i].draw(batch);
+        mainShip.draw(batch);
         batch.end();
     }
 
@@ -123,6 +135,7 @@ public class GameScreen extends Base2DScreen{
     public void dispose() {
         textureBackground.dispose();
         atlas.dispose();
+        atlasMenu.dispose();
         super.dispose();
     }
 }

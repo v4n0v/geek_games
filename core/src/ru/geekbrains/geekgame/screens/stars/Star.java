@@ -66,6 +66,7 @@ public class Star extends Sprite {
             rightPointer = INVALID_POINTER;
             if(leftPointer != INVALID_POINTER) moveLeft(); else stop();
         }
+       // stop();
         return false;
     }
 
@@ -85,8 +86,8 @@ public class Star extends Sprite {
                 moveRight();
                 break;
             case Input.Keys.UP:
-                frame = 1;
-                break;
+            scale=1.65f;
+            break;
         }
     }
 
@@ -103,19 +104,20 @@ public class Star extends Sprite {
                 if(pressedLeft) moveLeft(); else stop();
                 break;
             case Input.Keys.UP:
-                frame = 0;
+                scale=1f;
                 break;
         }
+      // stop();
     }
     private void moveRight() {
-        v.set(-0.25f,-0.25f);
+        v.set(-0.25f,-0.15f);
     }
 
     private void moveLeft() {
-         v.set(0.25f,-0.25f);
+         v.set(0.25f,-0.15f);
     }
 
-    private void stop() {
+    public void stop() {
         v.set(vLast);
     }
 }

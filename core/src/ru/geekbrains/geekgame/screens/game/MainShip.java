@@ -4,37 +4,33 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.geekbrains.geekgame.Ship;
+import ru.geekbrains.geekgame.pools.BulletPool;
 import ru.geekuniversity.engine.math.Rect;
 import ru.geekuniversity.engine.sprites.Sprite;
 
-class MainShip extends Sprite {
+class MainShip extends Ship {
 
     private static final float SHIP_HEIGHT = 0.15f;
     private static final float BOTTOM_MARGIN = 0.05f;
 
-    private Rect worldBounds;
     private final Vector2 v0 = new Vector2(0.5f, 0f);
-    private final Vector2 v = new Vector2();
-    private boolean inBounds;
-    private boolean leftOutOfBounds;
-    private boolean rightOutOfBounds;
 
-    MainShip(TextureAtlas atlas) {
+    MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
         setHeightProportion(SHIP_HEIGHT);
+        this.bulletPool = bulletPool;
+        bulletRegion = atlas.findRegion("bulletMainShip");
+        bulletHeight = 0.01f;
+        reloadInterval = 0.15f;
+        bulletV.set(0f, 0.5f);
+        bulletDamage = 1;
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        this.worldBounds = worldBounds;
+        super.resize(worldBounds);
         setBottom(worldBounds.getBottom() + BOTTOM_MARGIN);
-    }
-
-    // возврат значения проверки на выход за область экрана
-    public boolean isInBounds() {
-
-        return !(rightOutOfBounds || leftOutOfBounds);
-
     }
 
     private static final int INVALID_POINTER = -1;
@@ -72,31 +68,20 @@ class MainShip extends Sprite {
     private boolean pressedLeft;
     private boolean pressedRight;
 
-
     void keyDown(int keycode) {
         switch (keycode) {
             case Input.Keys.A:
             case Input.Keys.LEFT:
-              //  if (rightOutOfBounds)rightOutOfBounds=false;
-                if (rightOutOfBounds) {
-                    setRight(worldBounds.getRight());
-                }
                 pressedLeft = true;
                 moveLeft();
-                rightOutOfBounds=false;
                 break;
             case Input.Keys.D:
             case Input.Keys.RIGHT:
-                if (leftOutOfBounds) {
-                    setLeft(worldBounds.getLeft());
-
-                }
                 pressedRight = true;
                 moveRight();
-                leftOutOfBounds=false;
                 break;
             case Input.Keys.UP:
-                frame = 1;
+                shoot();
                 break;
         }
     }
@@ -106,18 +91,14 @@ class MainShip extends Sprite {
             case Input.Keys.A:
             case Input.Keys.LEFT:
                 pressedLeft = false;
-                if (pressedRight)
-                    moveRight();
+                if (pressedRight) moveRight();
                 else stop();
                 break;
             case Input.Keys.D:
             case Input.Keys.RIGHT:
-
                 pressedRight = false;
-                if (pressedLeft)
-                    moveLeft();
+                if (pressedLeft) moveLeft();
                 else stop();
-
                 break;
             case Input.Keys.UP:
                 frame = 0;
@@ -126,17 +107,10 @@ class MainShip extends Sprite {
     }
 
     private void moveRight() {
-//        if (leftOutOfBounds) {
-//            setLeft(worldBounds.getLeft());
-//        }
         v.set(v0);
-
     }
 
     private void moveLeft() {
-//        if (rightOutOfBounds) {
-//            setRight(worldBounds.getRight());
-//        }
         v.set(v0).rotate(180);
     }
 
@@ -146,29 +120,23 @@ class MainShip extends Sprite {
 
     @Override
     public void update(float deltaTime) {
-        checkBounds();
-        if (isInBounds())
-            pos.mulAdd(v, deltaTime);
-
-
-    }
-
-    //   проверка на выход за область экрана
-    private void checkBounds() {
-        if (getLeft() < worldBounds.getLeft())
-            leftOutOfBounds = true;
-
-        else {
-            leftOutOfBounds = false;
-
+        pos.mulAdd(v, deltaTime);
+        reloadTimer += deltaTime;
+        if (reloadTimer >= reloadInterval) {
+            reloadTimer = 0f;
+            shoot();
         }
         if (getRight() > worldBounds.getRight()) {
-            rightOutOfBounds = true;
-
-        } else {
-            rightOutOfBounds = false;
-
+            setRight(worldBounds.getRight());
+            stop();
         }
+        if (getLeft() < worldBounds.getLeft()) {
+            setLeft(worldBounds.getLeft());
+            stop();
+        }
+    }
 
+    Vector2 getV() {
+        return v;
     }
 }

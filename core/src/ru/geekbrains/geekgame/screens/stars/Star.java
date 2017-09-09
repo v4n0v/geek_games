@@ -9,7 +9,7 @@ import ru.geekuniversity.engine.math.Rnd;
 import ru.geekuniversity.engine.sprites.Sprite;
 
 public class Star extends Sprite {
-    private final Vector2 v= new Vector2();
+     final Vector2 v= new Vector2();
     private final Vector2 vLast= new Vector2();
     private Rect worldBounds;
 

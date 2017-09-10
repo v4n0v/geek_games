@@ -20,6 +20,8 @@ import ru.geekuniversity.engine.Sprite2DTexture;
 import ru.geekuniversity.engine.math.Rect;
 import ru.geekuniversity.engine.math.Rnd;
 
+import static ru.geekuniversity.engine.Base2DScreen.*;
+
 /**
  * Created by avetc on 04.09.2017.
  */
@@ -39,7 +41,8 @@ public class GameScreen extends Base2DScreen {
     private final TrackingStar[] stars = new TrackingStar[STARS_COUNT];
     private MainShip mainShip;
 
-    Rect worldBounds;
+   // Rect worldBounds;
+   // Base2DScreen screen;
 
     private Sound sndExplosion;
     private  EnemyShip enemyShip;
@@ -60,9 +63,7 @@ public class GameScreen extends Base2DScreen {
         background = new Background(new TextureRegion(textureBackground));
         mainShip = new MainShip(atlas, bulletPool);
 
-
         enemyPool = new EnemyPool(atlas);
-       // enemyShip= enemyPool.obtain();
 
         TextureRegion starRegion = atlas.findRegion("star");
 
@@ -80,17 +81,14 @@ public class GameScreen extends Base2DScreen {
         background.resize(worldBounds);
         for (int i = 0; i < stars.length; i++) stars[i].resize(worldBounds);
         mainShip.resize(worldBounds);
-        //enemyShip.resize(worldBounds);
-        enemyPool.resize(worldBounds);
     }
 
     @Override
     protected void touchDown(Vector2 touch, int pointer) {
         mainShip.touchDown(touch, pointer);
-        //explosion = explosionPool.obtain();
         enemyShip = enemyPool.obtain();
-        enemyShip.set();
-       // explosion.set(0.1f, touch);
+        enemyShip.set(this.getWorldBounds());
+
     }
 
     @Override
@@ -123,8 +121,6 @@ public class GameScreen extends Base2DScreen {
         for (int i = 0; i < stars.length; i++) stars[i].update(deltaTime);
         bulletPool.updateActiveSprites(deltaTime);
 
-        //enemyShip.update(deltaTime);
-
         enemyPool.updateActiveSprites(deltaTime);
 
         explosionPool.updateActiveSprites(deltaTime);
@@ -148,7 +144,6 @@ public class GameScreen extends Base2DScreen {
         batch.begin();
         background.draw(batch);
         for (int i = 0; i < stars.length; i++) stars[i].draw(batch);
-     //   enemyShip.draw(batch);
 
         bulletPool.drawActiveObjects(batch);
         explosionPool.drawActiveObjects(batch);

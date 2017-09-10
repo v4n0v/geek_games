@@ -72,7 +72,8 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         // создаем пул взрывов, верем из него экземпляр
         explosionPool = new ExplosionPool(atlasExplosion, sndExplosion);
         randomExplosion=explosionPool.obtain();
-
+        randomExplosion.set(0.1f, this.getWorldBounds());
+        lastExplosion = TimeUtils.millis();
         // устанавливаем музыку
         bgMusic = Gdx.audio.newMusic(Gdx.files.internal("music/muzLoop.mp3"));
         bgMusic.setVolume(0.5f);
@@ -95,8 +96,8 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
 
         // задаем позицию взрыва, тем самым передаем в него знаечние мировых координат
         // засекаем время
-        randomExplosion.resize(worldBounds);
-        lastExplosion = TimeUtils.millis();
+        //randomExplosion.resize(worldBounds);
+
 
         buttonExit.resize(worldBounds);
         buttonNewGame.resize(worldBounds);
@@ -147,7 +148,7 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         // каждые 3 секунды
         if(TimeUtils.millis() - lastExplosion > EXPLOSION_DELAY) {
             randomExplosion=explosionPool.obtain();
-            randomExplosion.setRandomPosition();
+            randomExplosion.set(0.1f, this.getWorldBounds());
             lastExplosion=TimeUtils.millis();
         }
 

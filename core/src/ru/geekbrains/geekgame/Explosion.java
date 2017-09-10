@@ -17,10 +17,6 @@ public class Explosion extends Sprite {
     private float animateTimer;
     protected Rect worldBounds;
 
-    long id;
-    Vector2 v = new Vector2();
-
-    //private final Vector2 v0 = new Vector2();
     public Explosion(TextureRegion region, int rows, int cols, int frames, Sound sndExplosion) {
         super(region, rows, cols, frames);
         this.sndExplosion = sndExplosion;
@@ -34,6 +30,17 @@ public class Explosion extends Sprite {
         if(sndExplosion.play(0.15f) == -1) throw new RuntimeException("sndExplosion.play() == -1");
     }
 
+    // для генерации рандомных взрыв я сделал еще 1 метод set
+    public void set(float height, Rect worldBounds) {
+        frame = 0;
+        this.worldBounds=worldBounds;
+        float posX = Rnd.nextFloat( this.worldBounds.getLeft(),  this.worldBounds.getRight());
+        float posY = Rnd.nextFloat( this.worldBounds.getBottom(),  this.worldBounds.getTop());
+        this.pos.set(posX, posY);
+        setHeightProportion(height);
+        if(sndExplosion.play(0.15f) == -1) throw new RuntimeException("sndExplosion.play() == -1");
+    }
+
     @Override
     public void update(float deltaTime) {
         animateTimer += deltaTime;
@@ -43,16 +50,4 @@ public class Explosion extends Sprite {
         }
     }
 
-    @Override
-    public void resize(Rect worldBounds) {
-        this.worldBounds=worldBounds;
-        float posX = Rnd.nextFloat(worldBounds.getLeft(), worldBounds.getRight());
-        float posY = Rnd.nextFloat(worldBounds.getBottom(), worldBounds.getTop());
-        pos.set(posX, posY);
-        this.set(0.1f, pos);
-    }
-
-    public void setRandomPosition( ){
-        resize(worldBounds);
-    }
 }

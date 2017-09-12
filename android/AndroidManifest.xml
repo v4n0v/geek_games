@@ -10,7 +10,7 @@
         android:label="SpaceShooter"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="ru.geekbrains.geekgame.AndroidLauncher"
+            android:name="ru.geekbrains.geekgame.ru.geekbrains.java_games.AndroidLauncher"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">

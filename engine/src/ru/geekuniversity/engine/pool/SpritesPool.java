@@ -55,7 +55,7 @@ public abstract class SpritesPool<T extends Sprite> {
             }
         }
     }
- //   меня постоянно сбивал с толку метод ресайз, по идее правильно именовать его setPosition, мы же там положение в "пространстве определем"
+
     public void drawActiveObjects(SpriteBatch batch) {
         final int cnt = activeObjects.size();
         for (int i = 0; i < cnt; i++) {

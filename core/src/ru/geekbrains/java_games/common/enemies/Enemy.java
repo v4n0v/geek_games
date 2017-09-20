@@ -12,13 +12,12 @@ import ru.geekuniversity.engine.math.Rect;
 
 public class Enemy extends Ship {
 
-//    private enum State { DESCENT, FIGHT }
+    private enum State { DESCENT, FIGHT }
 
-//    private final Vector2 descentV = new Vector2(0f, -0.15f);
+    private final Vector2 descentV = new Vector2(0f, -0.15f);
     private final Vector2 v0 = new Vector2();
     private final MainShip mainShip;
-// private float reloadTimer=0f;
-//    private State state;
+    private State state;
 
     Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, MainShip mainShip) {
         super(bulletPool, explosionPool, worldBounds);
@@ -49,60 +48,38 @@ public class Enemy extends Ship {
         this.hp = hp;
         setHeightProportion(height);
         reloadTimer = reloadInterval;
-        v.set(v0);
-//        state = State.DESCENT;
+        v.set(descentV);
+        state = State.DESCENT;
     }
 
-    //    @Override
-//    public void update(float deltaTime) {
-//        super.update(deltaTime);
-//        switch (state) {
-//            case DESCENT:
-//                if(getTop() <= worldBounds.getTop()) {
-//                    v.set(v0);
-//                    state = State.FIGHT;
-//                }
-//                break;
-//            case FIGHT:
-//                reloadTimer += deltaTime;
-//                if (reloadTimer >= reloadInterval) {
-//                    reloadTimer = 0f;
-//                    shoot();
-//                }
-//                if(getBottom() < worldBounds.getBottom()) {
-//                    mainShip.damage(bulletDamage);
-    //                    boom();
-//                    destroy();
-//                }
-//                break;
-//            default:
-//                throw new RuntimeException("Unknown state = " + state);
-//        }
-//    }
-//
-//
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        reloadTimer+=deltaTime;
-        if (reloadTimer>=reloadInterval) {
-            reloadTimer = 0f;
-            shoot();
-        }
-        if (getBottom() <= worldBounds.getBottom()) {
-            boom();
-            destroy();
-        }
-       // if (getBottom()<=mainShip.getTop() && (getLeft()>(mainShip.getLeft()+halfWidth)&& getRight()<(mainShip.getRight()-halfWidth))){
-            if (getBottom()<=mainShip.getTop()-mainShip.getHalfHeight() && (getLeft()+halfWidth/2<mainShip.getRight() &&  getRight()-halfWidth/2>(mainShip.getLeft()))){
-                System.out.println("collide");
-                boom();
-            destroy();
+        switch (state) {
+            case DESCENT:
+                if(getTop() <= worldBounds.getTop()) {
+                    v.set(v0);
+                    state = State.FIGHT;
+                }
+                break;
+            case FIGHT:
+                reloadTimer += deltaTime;
+                if (reloadTimer >= reloadInterval) {
+                    reloadTimer = 0f;
+                    shoot();
+                }
+                if(getBottom() < worldBounds.getBottom()) {
+                    mainShip.damage(bulletDamage);
+                    boom();
+                    destroy();
+                }
+                break;
+            default:
+                throw new RuntimeException("Unknown state = " + state);
         }
     }
 
-
-//    public boolean isBulletCollision (Rect bullet) {
-//        return !(bullet.getRight() < getLeft() || bullet.getLeft() > getRight() || bullet.getBottom() > getTop() || bullet.getTop() < pos.y);
-//    }
+    public boolean isBulletCollision (Rect bullet) {
+        return !(bullet.getRight() < getLeft() || bullet.getLeft() > getRight() || bullet.getBottom() > getTop() || bullet.getTop() < pos.y);
+    }
 }

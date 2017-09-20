@@ -11,6 +11,8 @@ package ru.geekbrains.java_games.common.enemies;
 
 public class EnemiesEmitter {
 
+    private int stage;
+
     private final Rect worldBounds;
     private final EnemyPool enemyPool;
 
@@ -61,12 +63,22 @@ public class EnemiesEmitter {
         bulletRegion = atlas.findRegion("bulletEnemy");
     }
 
-    public void generateEnemies(float deltaTime) {
+    public void setToNewGame() {
+        stage = 1;
+    }
+
+    public int getStage() {
+        return stage;
+    }
+
+    public void generateEnemies(float deltaTime, int frags) {
+        stage = frags / 10 + 1;
         generateTimer += deltaTime;
         if(generateTimer >= generateInterval) {
             generateTimer = 0f;
             Enemy enemy = enemyPool.obtain();
             float type = (float) Math.random();
+//            type = 0.91f;
             if(type < 0.7f) {
                 enemy.set(
                         enemySmallRegions,
@@ -74,11 +86,11 @@ public class EnemiesEmitter {
                         bulletRegion,
                         ENEMY_SMALL_BULLET_HEIGHT,
                         ENEMY_SMALL_BULLET_VY,
-                        ENEMY_SMALL_BULLET_DAMAGE,
+                        ENEMY_SMALL_BULLET_DAMAGE * stage,
                         ENEMY_SMALL_RELOAD_INTERVAL,
                         sndBullet,
                         ENEMY_SMALL_HEIGHT,
-                        ENEMY_SMALL_HP);
+                        ENEMY_SMALL_HP * stage);
             } else if(type < 0.9f) {
                 enemy.set(
                         enemyMediumRegions,
@@ -86,11 +98,11 @@ public class EnemiesEmitter {
                         bulletRegion,
                         ENEMY_MEDIUM_BULLET_HEIGHT,
                         ENEMY_MEDIUM_BULLET_VY,
-                        ENEMY_MEDIUM_BULLET_DAMAGE,
+                        ENEMY_MEDIUM_BULLET_DAMAGE * stage,
                         ENEMY_MEDIUM_RELOAD_INTERVAL,
                         sndBullet,
                         ENEMY_MEDIUM_HEIGHT,
-                        ENEMY_MEDIUM_HP);
+                        ENEMY_MEDIUM_HP * stage);
             } else {
                 enemy.set(
                         enemyBigRegions,
@@ -98,11 +110,11 @@ public class EnemiesEmitter {
                         bulletRegion,
                         ENEMY_BIG_BULLET_HEIGHT,
                         ENEMY_BIG_BULLET_VY,
-                        ENEMY_BIG_BULLET_DAMAGE,
+                        ENEMY_BIG_BULLET_DAMAGE * stage,
                         ENEMY_BIG_RELOAD_INTERVAL,
                         sndBullet,
                         ENEMY_BIG_HEIGHT,
-                        ENEMY_BIG_HP);
+                        ENEMY_BIG_HP * stage);
             }
             enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
             enemy.setBottom(worldBounds.getTop());
